@@ -79,10 +79,11 @@
   - Точность: 0.8314
 - 11.2M параметров
 
-### Опыты
+### Опыты (графики сглажены)
 
 #### 0.1 данных
 
+Точность по эпохам
 ![Train loss](./img/epoch_test_acc_01.svg)
 
 - Красный (0.8309)
@@ -106,9 +107,11 @@
   - предварительный разогрев с более плотными градиентами сильно улучшает ситуацию
 - [DGC](2) даёт лучший результат
   - момент не оказывает сильного влияния, но можно попробовать его увеличить
+- не имеет смысла обучать дальше 50 эпохи при данных параметрах
 
 #### 1.0 данных
 
+Точность по эпохам
 ![Test loss](./img/epoch_test_acc_10.svg)
 
 - Красный (0.9403)
@@ -129,6 +132,11 @@
 - [Deep Gradient Compression](https://github.com/synxlin/deep-gradient-compression) - распределённое обучение с Horovod и PyTorch, код опорной работы [Y.Lin et al. [2017]](2)
   - [GRAdient ComprEssion for distributed deep learning](https://github.com/sands-lab/grace) - основа для реализации выше
 - [DGS PyTorch](https://github.com/yanring/DGS) - код работы [Z.Yan et al. [2019]](https://dl.acm.org/doi/10.1145/3404397.3404401), реализация других подходов, включая [A.Aji, K.Heafield [2017]](1)
+
+## TODO
+
+1. Разделить логику сервера и работников
+2. Настроить коммуникацию
 
 [1]: https://arxiv.org/abs/1704.05021 "A.Aji, K.Heafield [2017]"
 [2]: https://arxiv.org/abs/1712.01887 "Y.Lin et al. [2017]"

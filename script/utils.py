@@ -70,7 +70,7 @@ CSV_TRAIN_FORMAT = \
     "{prmv:8d},{stp:8d},{trn_a:9.8f},{trn_l:10.4f},  {time_send:8.5f},  {time_recv:8.5f}," \
     "  {time_calc:8.5f},  {time_eval:8.5f},{grd_n:10.4f}\n"
 CSV_TEST_HEADER = \
-    "      epc,    tst_a,     tst_l, time_epch,time_btch,time_send,time_recv,time_ugrd," \
+    "     epc,     tst_a,     tst_l, time_epch,time_btch,time_send,time_recv,time_ugrd," \
     "time_ubnl,time_eval,time_logw,time_chck,        lr\n"
 CSV_TEST_FORMAT = \
     "{epc:8d},{tst_a:9.8f},{tst_l:10.4f},{time_epch:10.2f}, {time_btch:8.5f}," \

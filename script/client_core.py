@@ -20,19 +20,24 @@ class Client:
     """
 
     def __init__(self, args):
-        self.args = args
+        args.srv = False
         self.wid = -1
         self.param_version = 0
         if not torch.cuda.is_available():
-            self.args.cuda = False
-            self.handle_print("Cuda is not available, "
-                              "CPU will be used instead.")
+            args.cuda = False
+            if not args.s:
+                print("Cuda is not available, "
+                      "CPU will be used instead.")
+        self.comm = Communicator(fpath("keys_client"), args)
+        self.tags = TAGS
+        self.comm.send(None, self.tags.INIT)
+        tag, self.args = self.comm.recv()
+        self.args.cuda = args.cuda
+        self.args.s = args.s
 
         self.loader = get_train_dataloader(self.args)
         self.net = get_network(self.args)
         self.net.train()
-        self.comm = Communicator(fpath("keys_client"), self.args)
-        self.tags = TAGS
 
         self.n = list(filter(lambda x: x.requires_grad, self.net.parameters()))
         self.u = [torch.zeros_like(p) for p in self.net.parameters()]

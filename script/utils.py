@@ -28,8 +28,8 @@ ARGS_FORMAT = \
     "  cuda on parameter server  cuda:{cuda}\n\n" \
     "e={e} epochs:\n" \
     "  steps per spoch            spe={spe}\n" \
-    "  params pull every       sppull={sppull}\n" \
-    "  logs push every            spr={spr}\n" \
+    "  params pull every       sppull={sppull} epochs\n" \
+    "  logs push every            spr={spr} steps\n" \
     "  using checkpoints every      c={c} epochs\n" \
     "  milestones                  ms={ms}\n" \
     "    learning rate             lr={lr}\n" \
@@ -112,7 +112,10 @@ def enum(*sequential, **named):
 """
 Message tags
 """
-TAGS = enum("PULL", "PARAMS",
+# REQ ->
+# ...<- REP
+TAGS = enum("INIT", "ARGS",
+            "PULL", "PARAMS",
             "GRADS", "CONFIRM_GRADS",
             "STATS", "CONFIRM_STATS")
 
@@ -124,7 +127,8 @@ def memoryleak_fix(map_loc):
 class MappedUnpickler(pickle.Unpickler):
     def __init__(self, *args, map_loc="cpu", **kwargs):
         self._map_location = map_loc
-        self.allowed = {("torch._utils", "_rebuild_parameter"),
+        self.allowed = {("argparse", "Namespace"),
+                        ("torch._utils", "_rebuild_parameter"),
                         ("torch._utils", "_rebuild_tensor_v2"),
                         ("torch.storage", "_load_from_bytes"),
                         ("collections", "OrderedDict"),
@@ -255,7 +259,7 @@ def get_train_dataloader(args):
 
 def get_train_light_dataloader(args):
     """
-    Uses 0.05 of training dataset to learn BN parameters locally
+    Uses fraction of training dataset to learn BN parameters locally
     without reducing them from workers
     """
     transformer = transforms.Compose([transforms.RandomCrop(32, padding=4),

@@ -26,6 +26,7 @@ class Server:
     """
 
     def __init__(self, args):
+        args.srv = True
         self.args = args
         if not torch.cuda.is_available():
             self.args.cuda = False
@@ -284,8 +285,9 @@ class Server:
             except UnpicklingError:
                 self.comm.send(None, -1)
                 continue
-
-            if tag == self.tags.PULL:
+            if tag == self.tags.INIT:
+                self.comm.send(self.args, self.tags.ARGS)
+            elif tag == self.tags.PULL:
                 self.timer(3)
 
                 wid = data

@@ -23,8 +23,8 @@ def main():
     parser.add_argument("-e", "--epochs", type=int, default=50,
                         help="total epochs (50)",
                         dest="e")
-    parser.add_argument("-spe", "--steps_per_epoch", type=int, default=800,
-                        help="number of steps per epoch (800)",
+    parser.add_argument("-spe", "--steps_per_epoch", type=int, default=1000,
+                        help="number of steps per epoch (1000)",
                         dest="spe")
     parser.add_argument("-net", "--network", default="simplenetv1", type=str,
                         help="network, one of (simplenetv1), resnet18, resnet34, resnet50",
@@ -41,8 +41,8 @@ def main():
     parser.add_argument("-g", "--gamma", type=float, default=0.1,
                         help="gamma (0.1)",
                         dest="g")
-    parser.add_argument("-a", "--alpha", type=float, default=0.05,
-                        help="alpha (0.05)",
+    parser.add_argument("-a", "--alpha", type=float, default=0.03,
+                        help="alpha (0.03)",
                         dest="a")
     parser.add_argument("-bnf", "--batch_norm_fraction", default=0.1, type=float,
                         help="batchnorm layers learner samples fraction (0.1)",

@@ -197,7 +197,7 @@ class Communicator:
         except zmq.Again as err:
             if not self.silent:
                 print("Failed to receive, timeout.")
-                sys.stdio.flush()
+                sys.stdout.flush()
             exit(1)
         up = MappedUnpickler(BytesIO(p), map_loc=self.dev).load()
         return up

@@ -124,19 +124,12 @@ class Client:
         l_u.mul_(~mask)
 
     @torch.no_grad()
-    def apply_lu(self, p, l_v, l_u, l_o):
+    def apply_lu(self, comp_lr):
         """
-        Applies local update (bad idea, skipped for now)
+        Applies local update
         """
-        lr = self.args.lr
-        e = self.param_version // self.args.spe
-        if self.args.g is not None:
-            for s in self.args.ms:
-                if e >= s:
-                    lr *= self.args.g
-                else:
-                    break
-        p.add_(l_o, alpha=-lr)
+        for p, l_o in zip(self.n, self.o):
+            p.add_(l_o, alpha=-comp_lr)
 
     def step(self):
         self.steps_finished += 1
@@ -145,8 +138,6 @@ class Client:
             self.apply_cn(*t)
             self.apply_mc(*t)
             self.apply_cr(*t)
-            if self.steps_finished % self.args.sppull:
-                self.apply_lu(*t)
 
     @torch.no_grad()
     def evaluate(self, loss, outputs, labels):
@@ -197,7 +188,9 @@ class Client:
 
                 self.comm.send([self.param_version, compress(self.o), self.wid],
                                self.tags.GRADS)
-                self.comm.recv()
+                tag, comp_lr = self.comm.recv()
+                if self.steps_finished % self.args.sppull:
+                    self.apply_lu(comp_lr)
                 # send time
                 self.timer("send")
 

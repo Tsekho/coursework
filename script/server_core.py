@@ -176,16 +176,19 @@ class Server:
             s = STDOUT_FORMAT.format(**self.log_obj)
             self.handle_print(s)
 
+    def get_compensated_lr(self, pv):
+        k = self.args.a * (self.steps_finished - pv)
+        return (self.lr / (1 + k))
+
     @torch.no_grad()
-    def update_params(self, pv, params, lr):
+    def update_params(self, params, comp_lr):
         """
         Applies received gradients
         """
         for n, g in zip(self.n, params):
             if self.args.cuda:
                 g = g.cuda()
-            k = self.args.a * (self.steps_finished - pv)
-            n.view(-1).add_(g, alpha=-(lr / (1 + k)))
+            n.view(-1).add_(g, alpha=-comp_lr)
 
     @torch.no_grad()
     def update_bn_params(self):
@@ -303,11 +306,12 @@ class Server:
 
             elif tag == self.tags.GRADS:
                 pv, params, wid = data
-                self.comm.send(None, self.tags.CONFIRM_GRADS)
+                comp_lr = self.get_compensated_lr(pv)
+                self.comm.send(comp_lr, self.tags.CONFIRM_GRADS)
                 # average receive_grads + reply time per step
                 self.timer(3, "recv", self.args.spe)
 
-                self.update_params(pv, decompress(params), self.lr)
+                self.update_params(decompress(params), comp_lr)
                 self.steps_finished += 1
                 next(self.bar)
                 # average parameter update time

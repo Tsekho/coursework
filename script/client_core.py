@@ -162,7 +162,6 @@ class Client:
         while True:
             for images, labels in self.loader:
                 self.timer()
-
                 if not self.steps_finished % self.args.sppull:
                     self.comm.send(self.wid, self.tags.PULL)
                     tag, data = self.comm.recv()
@@ -195,6 +194,7 @@ class Client:
                 self.evaluate(loss, outputs, labels)
                 # evaluation time
                 self.timer("eval")
+
                 self.comm.send([self.param_version, compress(self.o), self.wid],
                                self.tags.GRADS)
                 self.comm.recv()

@@ -168,7 +168,6 @@ class Communicator:
             self.sock.curve_publickey = pk
             self.sock.curve_secretkey = sk
             self.sock.setsockopt(zmq.RCVTIMEO, 60 * 60 * 1000)  # 1h
-            self.sock.setsockopt(zmq.RCVBUF, 50)
             self.sock.curve_server = True
 
             self.sock.bind("tcp://*:{}".format(args.port))
@@ -189,7 +188,7 @@ class Communicator:
         self.sock.setsockopt(zmq.LINGER, 0)
 
     def send(self, obj, tag):
-        p = pickle.dumps([tag, obj], 5)
+        p = pickle.dumps([tag, obj], 4)
         self.sock.send(p)
 
     def recv(self):

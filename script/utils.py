@@ -189,7 +189,7 @@ class Communicator:
 
     def send(self, obj, tag):
         p = pickle.dumps([tag, obj], 4)
-        self.sock.send(p)
+        self.sock.send(p, zmq.NOBLOCK)
 
     def recv(self):
         try:
